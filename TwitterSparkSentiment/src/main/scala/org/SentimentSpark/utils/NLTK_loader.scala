@@ -19,6 +19,9 @@ object NLTK_loader {
     * @param stopWordsFileName -- File Path Name of the stopwords text file
     */
   def loadStopWords(stopWordsFileName: String): List[String] = {
-    Source.fromInputStream(getClass.getResourceAsStream("/" + stopWordsFileName)).getLines().toList
+    Source
+      .fromInputStream(getClass.getResourceAsStream("/" + stopWordsFileName))
+      .getLines()
+      .toList
   }
 }

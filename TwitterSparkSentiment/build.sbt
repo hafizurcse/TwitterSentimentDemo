@@ -46,6 +46,7 @@ libraryDependencies ++= Seq(
 
   // Writing Tests - NOT DONE
   "org.scalatest" %% "scalatest" % scalaTest % "test",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
 
   // Core-NLP Text Processing Library
   "edu.stanford.nlp" % "stanford-corenlp" % coreNlpVersion,

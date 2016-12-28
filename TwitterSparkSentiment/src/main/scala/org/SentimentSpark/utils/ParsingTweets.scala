@@ -8,6 +8,9 @@ import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.mllib.feature.HashingTF
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.util.DoubleAccumulator
+import org.json4s.DefaultFormats
+import org.json4s.jackson.Json
 
 import scala.util.parsing.json.JSON
 
@@ -73,6 +76,7 @@ object ParsingTweets {
   }
 
   val hashingTF = new HashingTF()
+
   /**
     * Transforms features to Vectors.
     *
@@ -84,13 +88,40 @@ object ParsingTweets {
   }
 
   /**
+    * Covert a List to JSON
+    *
+    * @param tweetElements -- List of Contents
+    */
+  def prepareJSON(tweetElements: List[String]): String = {
+
+    // Convert to Map
+    val jSONDocument = Map(
+      "tweet" -> tweetElements.head,
+      "author_username" -> tweetElements(1),
+      "created_at" -> tweetElements(2),
+      "coreNLPlabel" -> tweetElements(3),
+      "MLLIBlabel" -> tweetElements(4)
+    )
+
+    val jsonOutput = Json(DefaultFormats).write(jSONDocument)
+
+    jsonOutput
+  }
+
+  /**
     * Extracting Elements from JSON and Classifying it's Sentiment Scores
     *
     * @param inputString -- Complete JSON from the Kafka Topic
     * @param stopWordsList -- Broadcast Spark Reference
     * @param naiveBayesModel -- Machine Learning Model (Naive Bayes)
     */
-  def extractData(inputString: String, stopWordsList: Broadcast[List[String]], naiveBayesModel: NaiveBayesModel): List[String] = {
+  def extractData(inputString: String,
+                  stopWordsList: Broadcast[List[String]],
+                  naiveBayesModel: NaiveBayesModel,
+                  numMessagesPositive: DoubleAccumulator,
+                  numMessagesNegative: DoubleAccumulator,
+                  numMessagesNeutral: DoubleAccumulator): String = {
+
     // Parse the Tweet Data from JSON
     val parseTweet = JSON.parseFull(inputString)
 
@@ -130,8 +161,16 @@ object ParsingTweets {
       case _  => "Not Classified"
     }
 
-    // List Return Type
-    List(text, author_username, created_at, coreNLPlabel, MLLIBlabel)
+    // Increment Accumulators
+    MLLIBlabel match {
+      case "Positive" => numMessagesPositive.add(1)
+      case "Negative" => numMessagesNegative.add(1)
+      case _ => numMessagesNeutral.add(1)
+    }
+
+    // Convert JSON
+    prepareJSON(List(text, author_username, created_at, coreNLPlabel, MLLIBlabel))
+
   }
 
 }

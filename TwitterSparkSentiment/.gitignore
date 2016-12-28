@@ -13,3 +13,4 @@ project/boot/
 # Package Files
 /src/main/resources/Models
 .idea/*
+/target/scala-2.11/TwitterSparkSentiment-assembly-1.0.jar

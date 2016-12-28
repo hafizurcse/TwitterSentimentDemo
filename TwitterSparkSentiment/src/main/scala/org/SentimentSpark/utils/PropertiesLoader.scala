@@ -26,7 +26,8 @@ object PropertiesLoader {
   val accessToken = conf.getString("ACCESS_TOKEN_KEY")
   val accessTokenSecret = conf.getString("ACCESS_TOKEN_SECRET")
 
-  val microBatchTimeInSeconds = conf.getInt("STREAMING_MICRO_BATCH_TIME_IN_SECONDS")
+  val microBatchTimeInSeconds =
+    conf.getInt("STREAMING_MICRO_BATCH_TIME_IN_SECONDS")
   val totalRunTimeInMinutes = conf.getInt("TOTAL_RUN_TIME_IN_MINUTES")
 
   val kafka_topic = conf.getString("KAFKA_TOPIC")

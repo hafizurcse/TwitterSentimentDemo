@@ -17,7 +17,8 @@ object CoreNLPSentimentAnalyzer {
 
   lazy val pipeline = {
     val props = new Properties()
-    props.setProperty("annotators", "tokenize, ssplit, pos, lemma, parse, sentiment")
+    props.setProperty("annotators",
+                      "tokenize, ssplit, pos, lemma, parse, sentiment")
     new StanfordCoreNLP(props)
   }
 
@@ -46,10 +47,20 @@ object CoreNLPSentimentAnalyzer {
 
   def extractSentiments(text: String): List[(String, Int)] = {
     val annotation: Annotation = pipeline.process(text)
-    val sentences = annotation.get(classOf[CoreAnnotations.SentencesAnnotation])
+    val sentences =
+      annotation.get(classOf[CoreAnnotations.SentencesAnnotation])
     sentences
-      .map(sentence => (sentence, sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])))
-      .map { case (sentence, tree) => (sentence.toString, normalizeCoreNLPSentiment(RNNCoreAnnotations.getPredictedClass(tree))) }
+      .map(
+        sentence =>
+          (sentence,
+           sentence.get(
+             classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])))
+      .map {
+        case (sentence, tree) =>
+          (sentence.toString,
+           normalizeCoreNLPSentiment(
+             RNNCoreAnnotations.getPredictedClass(tree)))
+      }
       .toList
   }
 
@@ -59,8 +70,10 @@ object CoreNLPSentimentAnalyzer {
     val sentiments: ListBuffer[Double] = ListBuffer()
     val sizes: ListBuffer[Int] = ListBuffer()
 
-    for (sentence <- annotation.get(classOf[CoreAnnotations.SentencesAnnotation])) {
-      val tree = sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])
+    for (sentence <- annotation.get(
+           classOf[CoreAnnotations.SentencesAnnotation])) {
+      val tree =
+        sentence.get(classOf[SentimentCoreAnnotations.SentimentAnnotatedTree])
       val sentiment = RNNCoreAnnotations.getPredictedClass(tree)
 
       sentiments += sentiment.toDouble
@@ -70,7 +83,8 @@ object CoreNLPSentimentAnalyzer {
     val weightedSentiment = if (sentiments.isEmpty) {
       -1
     } else {
-      val weightedSentiments = (sentiments, sizes).zipped.map((sentiment, size) => sentiment * size)
+      val weightedSentiments =
+        (sentiments, sizes).zipped.map((sentiment, size) => sentiment * size)
       weightedSentiments.sum / sizes.sum
     }
 

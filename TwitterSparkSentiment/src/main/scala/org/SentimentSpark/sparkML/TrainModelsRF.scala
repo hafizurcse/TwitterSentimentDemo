@@ -24,7 +24,8 @@ object TrainModelsRF {
 
     LogUtils.setLogLevels(sc)
 
-    val stopWordsList = sc.broadcast(NLTK_loader.loadStopWords(PropertiesLoader.nltkStopWords))
+    val stopWordsList =
+      sc.broadcast(NLTK_loader.loadStopWords(PropertiesLoader.nltkStopWords))
     createAndSaveNBModel(sc, stopWordsList)
     validateAccuracyOfNBModel(sc, stopWordsList)
 
@@ -66,15 +67,17 @@ object TrainModelsRF {
     * @param sc            -- Spark Context.
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
     */
-  def createAndSaveNBModel(sc: SparkContext, stopWordsList: Broadcast[List[String]]): Unit = {
+  def createAndSaveNBModel(sc: SparkContext,
+                           stopWordsList: Broadcast[List[String]]): Unit = {
 
-    val tweetsDF: DataFrame = loadSentiment140File(sc, PropertiesLoader.TrainingFilePath)
+    val tweetsDF: DataFrame =
+      loadSentiment140File(sc, PropertiesLoader.TrainingFilePath)
 
     val labeledRDD = tweetsDF.select("polarity", "status").rdd.map {
 
       case Row(polarity: Int, tweet: String) =>
-
-        val tweetInWords: Seq[String] = ParsingTweets.getBarebonesTweetText(tweet, stopWordsList.value)
+        val tweetInWords: Seq[String] =
+          ParsingTweets.getBarebonesTweetText(tweet, stopWordsList.value)
 
         LabeledPoint(polarity, ParsingTweets.transformFeatures(tweetInWords))
 
@@ -92,8 +95,14 @@ object TrainModelsRF {
     val maxDepth = 1
     val maxBins = 2
 
-    val model = RandomForest.trainClassifier(labeledRDD, numClasses, categoricalFeaturesInfo,
-      numTrees, featureSubsetStrategy, impurity, maxDepth, maxBins)
+    val model = RandomForest.trainClassifier(labeledRDD,
+                                             numClasses,
+                                             categoricalFeaturesInfo,
+                                             numTrees,
+                                             featureSubsetStrategy,
+                                             impurity,
+                                             maxDepth,
+                                             maxBins)
     model.save(sc, PropertiesLoader.ModelPath)
   }
 
@@ -104,30 +113,38 @@ object TrainModelsRF {
     * @param sc            -- Spark Context.
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
     */
-  def validateAccuracyOfNBModel(sc: SparkContext, stopWordsList: Broadcast[List[String]]): Unit = {
+  def validateAccuracyOfNBModel(
+      sc: SparkContext,
+      stopWordsList: Broadcast[List[String]]): Unit = {
 
     val model = RandomForestModel.load(sc, PropertiesLoader.ModelPath)
 
-    val tweetsDF: DataFrame = loadSentiment140File(sc, PropertiesLoader.TestingFilePath)
+    val tweetsDF: DataFrame =
+      loadSentiment140File(sc, PropertiesLoader.TestingFilePath)
 
     val actualVsPredictionRDD = tweetsDF.select("polarity", "status").rdd.map {
 
       case Row(polarity: Int, tweet: String) =>
-
         val tweetText = replaceNewLines(tweet)
 
-        val tweetInWords: Seq[String] = ParsingTweets.getBarebonesTweetText(tweetText, stopWordsList.value)
+        val tweetInWords: Seq[String] =
+          ParsingTweets.getBarebonesTweetText(tweetText, stopWordsList.value)
         (polarity.toDouble,
-          model.predict(ParsingTweets.transformFeatures(tweetInWords)),
-          tweetText)
+         model.predict(ParsingTweets.transformFeatures(tweetInWords)),
+         tweetText)
     }
 
     actualVsPredictionRDD.cache()
-    val accuracy = 100.0 * actualVsPredictionRDD.filter(x => x._1 == x._2).count() / tweetsDF.count()
-    val predictedInCorrect = actualVsPredictionRDD.filter(x => x._1 != x._2).count()
+    val accuracy = 100.0 * actualVsPredictionRDD
+        .filter(x => x._1 == x._2)
+        .count() / tweetsDF.count()
+    val predictedInCorrect =
+      actualVsPredictionRDD.filter(x => x._1 != x._2).count()
 
-    LogUtils.log.info(f"""\n\t<==******** Prediction Accuracy compared to actual: $accuracy%.2f%% ********==>\n""")
-    LogUtils.log.info(f"""\n\t<==********  Incorrect Values Predicted : $predictedInCorrect       ********==>\n""")
+    LogUtils.log.info(
+      f"""\n\t<==******** Prediction Accuracy compared to actual: $accuracy%.2f%% ********==>\n""")
+    LogUtils.log.info(
+      f"""\n\t<==********  Incorrect Values Predicted : $predictedInCorrect       ********==>\n""")
 
     //saveAccuracy(sc, actualVsPredictionRDD)
   }
@@ -139,7 +156,8 @@ object TrainModelsRF {
     * @param sentiment140FilePath -- Absolute file path of Sentiment140.
     * @return -- Spark DataFrame of the Sentiment file with the tweet text and its polarity.
     */
-  def loadSentiment140File(sc: SparkContext, sentiment140FilePath: String): DataFrame = {
+  def loadSentiment140File(sc: SparkContext,
+                           sentiment140FilePath: String): DataFrame = {
 
     val sqlContext = SQLContextSingleton.getInstance(sc)
 
@@ -150,7 +168,9 @@ object TrainModelsRF {
       .load(sentiment140FilePath)
       .toDF("polarity", "id", "date", "query", "user", "status")
 
-    LogUtils.log.info(f"""\n\t<==********  Number of Rows in the Dataset  : ${tweetsDF.count()} ********==>\n""")
+    LogUtils.log.info(
+      f"""\n\t<==********  Number of Rows in the Dataset  : ${tweetsDF
+        .count()} ********==>\n""")
 
     // Drop the columns we are not interested in.
     tweetsDF.drop("id").drop("date").drop("query").drop("user")
@@ -163,14 +183,19 @@ object TrainModelsRF {
     * @param sc                    -- Spark Context.
     * @param actualVsPredictionRDD -- RDD of polarity of a tweet in dataset and MLlib computed polarity.
     */
-  def saveAccuracy(sc: SparkContext, actualVsPredictionRDD: RDD[(Double, Double, String)]): Unit = {
+  def saveAccuracy(
+      sc: SparkContext,
+      actualVsPredictionRDD: RDD[(Double, Double, String)]): Unit = {
 
     val sqlContext = SQLContextSingleton.getInstance(sc)
     import sqlContext.implicits._
 
-    val actualVsPredictionDF = actualVsPredictionRDD.toDF("Actual", "Predicted", "Text")
+    val actualVsPredictionDF =
+      actualVsPredictionRDD.toDF("Actual", "Predicted", "Text")
 
-    actualVsPredictionDF.coalesce(1).write
+    actualVsPredictionDF
+      .coalesce(1)
+      .write
       .format("com.databricks.spark.csv")
       .option("header", "true")
       .option("delimiter", ",")

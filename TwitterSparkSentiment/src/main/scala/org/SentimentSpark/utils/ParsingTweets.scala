@@ -24,9 +24,12 @@ object ParsingTweets {
     * @param model         -- Naive Bayes Model of the trained data.
     * @return Int Sentiment of the tweet.
     */
-  def computeSentiment(text: String, stopWordsList: Broadcast[List[String]], model: NaiveBayesModel): Int = {
+  def computeSentiment(text: String,
+                       stopWordsList: Broadcast[List[String]],
+                       model: NaiveBayesModel): Int = {
 
-    val tweetInWords: Seq[String] = getBarebonesTweetText(text, stopWordsList.value)
+    val tweetInWords: Seq[String] =
+      getBarebonesTweetText(text, stopWordsList.value)
 
     val polarity = model.predict(ParsingTweets.transformFeatures(tweetInWords))
 
@@ -56,9 +59,11 @@ object ParsingTweets {
     * @param stopWordsList -- Broadcast variable for list of stop words to be removed from the tweets.
     * @return Seq[String] after removing additional characters and stop words from the tweet.
     */
-  def getBarebonesTweetText(tweetText: String, stopWordsList: List[String]): Seq[String] = {
+  def getBarebonesTweetText(tweetText: String,
+                            stopWordsList: List[String]): Seq[String] = {
     //Remove URLs, RT, MT and other redundant chars / strings from the tweets.
-    tweetText.toLowerCase()
+    tweetText
+      .toLowerCase()
       .replaceAll("\n", "")
       .replaceAll("rt\\s+", "")
       .replaceAll("\\s+@\\w+", "")
@@ -147,18 +152,19 @@ object ParsingTweets {
     val coreNLP = CoreNLPSentimentAnalyzer.computeWeightedSentiment(text)
     val coreNLPlabel = coreNLP match {
       case -1 => "Negative"
-      case 0  => "Neutral"
-      case 1  => "Positive"
-      case _  => "Not Classified"
+      case 0 => "Neutral"
+      case 1 => "Positive"
+      case _ => "Not Classified"
     }
 
     // Get a Prediction of the Tweets Sentiment - Machine Learning Model
-    val MLSentiment = ParsingTweets.computeSentiment(text, stopWordsList, naiveBayesModel)
+    val MLSentiment =
+      ParsingTweets.computeSentiment(text, stopWordsList, naiveBayesModel)
     val MLLIBlabel = MLSentiment match {
       case -1 => "Negative"
-      case 0  => "Neutral"
-      case 1  => "Positive"
-      case _  => "Not Classified"
+      case 0 => "Neutral"
+      case 1 => "Positive"
+      case _ => "Not Classified"
     }
 
     // Increment Accumulators
@@ -169,10 +175,9 @@ object ParsingTweets {
     }
 
     // Convert JSON
-    prepareJSON(List(text, author_username, created_at, coreNLPlabel, MLLIBlabel))
+    prepareJSON(
+      List(text, author_username, created_at, coreNLPlabel, MLLIBlabel))
 
   }
 
 }
-
-

@@ -41,3 +41,21 @@ Shouldn't require rebuilding the .jar file to often after the first build. If it
 Requires the [Twitter Sentiment140 Dataset](https://docs.google.com/file/d/0B04GJPshIjmPRnZManQwWEdTZjg/edit)
 
 1. Easiest method, open IntelliJ and run the **TrainModelsNB.scala** file.
+
+## Monitoring the WebUI Topic
+
+Once the twitter messages have been parsed they will be pushed into a seperate KAFKA TOPIC called "WebUI"
+
+To create a consumer to monitor the output run the follow command from the Kakfa folder:
+
+```bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic WebUI```
+
+The format of the message is in JSON format, can easily be adjusted:
+
+```
+    {"tweet":"SOME MESSAGE",
+     "coreNLPlabel":"Negative",
+     "created_at":"Thu Dec 29 12:21:43 GMT 2016",
+     "author_username":"SOME USER NAME",
+     "MLLIBlabel":"Positive"}
+```

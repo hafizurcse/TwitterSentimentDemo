@@ -31,5 +31,6 @@ object PropertiesLoader {
   val totalRunTimeInMinutes = conf.getInt("TOTAL_RUN_TIME_IN_MINUTES")
 
   val kafka_topic = conf.getString("KAFKA_TOPIC")
+  val kafka_output_topic = conf.getString("KAFKA_OUTPUT_TOPIC")
 
 }

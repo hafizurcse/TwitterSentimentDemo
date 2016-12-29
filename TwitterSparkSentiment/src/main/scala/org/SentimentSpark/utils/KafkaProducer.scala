@@ -4,6 +4,8 @@ import java.util
 
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig}
 
+// Credit for file to:
+// https://github.com/xuxiangwen/mastering-spark/blob/426b86b96fea9e45dcf3d85b18d1473d35659228/src/main/scala/org/xxw/spark/streaming/kafka/direct/Producer.scala
 case class Producer(props: util.HashMap[String, Object]) {
 
   @volatile private var instance: KafkaProducer[String, String] = null

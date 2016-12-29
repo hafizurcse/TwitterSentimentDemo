@@ -3,6 +3,8 @@ package org.SentimentSpark.utils
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 
+// Credit for file to:
+// https://github.com/xuxiangwen/mastering-spark/blob/426b86b96fea9e45dcf3d85b18d1473d35659228/src/main/scala/org/xxw/spark/streaming/kafka/direct/Message.scala
 object Message {
   def apply(topic: String, value: String): Message = {
     Message(topic, "", value, -1, -1)

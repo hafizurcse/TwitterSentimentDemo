@@ -50,7 +50,7 @@ To create a consumer to monitor the output run the follow command from the Kakfa
 
 ```bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic WebUI```
 
-The format of the message is in JSON format, can easily be adjusted:
+The format of the message is in JSON format:
 
 ```
     {"tweet":"SOME MESSAGE",

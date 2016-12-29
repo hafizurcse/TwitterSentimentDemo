@@ -44,7 +44,7 @@ Requires the [Twitter Sentiment140 Dataset](https://docs.google.com/file/d/0B04G
 
 ## Monitoring the WebUI Topic
 
-Once the twitter messages have been parsed they will be pushed into a seperate KAFKA TOPIC called "WebUI"
+Once the twitter messages have been parsed they will be pushed into a separate KAFKA TOPIC called "WebUI"
 
 To create a consumer to monitor the output run the follow command from the Kakfa folder:
 

@@ -44,8 +44,8 @@ object TwitterStreamApp extends App {
 
       // Twitter Filtering
       twitterStream.sample("en")
-      twitterStream.filter("data", "analytics", "brexit", "football", "trump", "rooney", "clinton", "russia", "usa",
-                           "python", "scala", "qbiz", "qgroup", "lloyds", "gsk", "oil", "pharma")
+      twitterStream.filter("gala", "ladbrokes", "sports betting", "coral",
+      "ladbrookes coral", "gala coral")
 
     // In event an Actor cannot start - log this!
     case Failure(ex) =>

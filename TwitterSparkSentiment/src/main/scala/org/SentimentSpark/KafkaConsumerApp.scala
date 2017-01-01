@@ -1,6 +1,5 @@
 package org.SentimentSpark
 
-import com.typesafe.scalalogging.LazyLogging
 import org.SentimentSpark.utils._
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.mllib.classification.NaiveBayesModel
@@ -12,16 +11,23 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
   * Created by dan.dixey on 14/10/2016.
   */
-object KafkaConsumerApp extends App with LazyLogging {
+object KafkaConsumerApp extends App {
 
   override def main(args: Array[String]): Unit = {
+
+    val logger = LogUtils.log
 
     // Setup the Spark Environment
     val conf = new SparkConf()
       .setMaster("local[*]")
       .setAppName("KafkaListener")
       .set("spark.serializer", classOf[KryoSerializer].getCanonicalName)
+
+    // Load the config into Spark
     val sc = SparkContext.getOrCreate(conf)
+    sc.setLogLevel("ERROR")
+
+    // Define a Streaming context
     val ssc = new StreamingContext(
       sc,
       Durations.seconds(PropertiesLoader.microBatchTimeInSeconds))
@@ -81,10 +87,9 @@ object KafkaConsumerApp extends App with LazyLogging {
 
           // Print the Output
           val r = scala.util.Random
-          val msg = Message(topicProducer,
-                            r.nextInt(100000000).toString,
-                            transform.toString)
-          //logger.debug(msg.toString)
+          val msg = Message(topic = topicProducer,
+                            key = r.nextInt(100000000).toString,
+                            value = transform.toString)
 
           // Push Message as JSON to Kafka Queue
           producer.send(msg)

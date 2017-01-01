@@ -23,7 +23,12 @@ object LogUtils {
     if (!log4jInitialized) {
       log.info("""Setting log level to [WARN] for streaming executions.
           |To override add a custom log4j.properties to the classpath.""".stripMargin)
+
       Logger.getRootLogger.setLevel(Level.WARN)
+      Logger.getLogger("org").setLevel(Level.WARN)
+      Logger.getLogger("akka").setLevel(Level.WARN)
+      Logger.getLogger("kafka").setLevel(Level.WARN)
+      Logger.getLogger("spark").setLevel(Level.WARN)
 
     }
   }

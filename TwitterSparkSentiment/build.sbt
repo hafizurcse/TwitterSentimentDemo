@@ -3,14 +3,19 @@
   */
 
 // Project Details
-lazy val TwitterSparkSentiment = (project in file(".")).
+lazy val TwitterSparkSentiment = (project in file("app")).
   settings(
     name := "TwitterSparkSentiment",
     version := "1.0",
     scalaVersion := "2.11.8"
+  ).
+  settings(
+    mainClass in assembly := Some("com.SentimentSpark.KafkaConsumer"),
+    assemblyJarName in assembly := "SparkOutput.jar"
   )
 
 // Versions
+scalaVersion := "2.11.8"
 val sparkVersion = "2.0.1"
 val sparkCsvVersion = "1.4.0"
 val configVersion = "1.3.0"
@@ -42,11 +47,10 @@ libraryDependencies ++= Seq(
   // Kafka
   "org.apache.kafka" % "kafka-clients" % kafkaVersion,
   "org.apache.kafka" %% "kafka" % kafkaVersion,
-  "info.batey.kafka" % "kafka-unit" % "0.2",
+  //"info.batey.kafka" % "kafka-unit" % "0.2",
 
   // Writing Tests - NOT DONE
   "org.scalatest" %% "scalatest" % scalaTest % "test",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
 
   // Core-NLP Text Processing Library
   "edu.stanford.nlp" % "stanford-corenlp" % coreNlpVersion,

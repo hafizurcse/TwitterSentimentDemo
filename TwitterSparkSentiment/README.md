@@ -32,7 +32,7 @@ Shouldn't require rebuilding the .jar file to often after the first build. If it
 
 5. Run the following command:
 
-    $ sbt assembly
+    $ sbt -J-Xms4096m -J-Xmx4096m assembly # More memory
 
 *The output is shared within the target/scala-2.11/ folder* 
  

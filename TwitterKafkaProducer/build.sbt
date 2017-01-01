@@ -17,3 +17,15 @@ libraryDependencies ++= Seq(
   "org.apache.kafka" % "kafka-clients" % kafkaVersion,
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
+
+// Project Details
+lazy val TwitterSparkSentiment = (project in file("app")).
+  settings(
+    name := "TwitterSparkSentiment",
+    version := "1.0",
+    scalaVersion := "2.11.8"
+  ).
+  settings(
+    mainClass in assembly := Some("com.QbizTwitterProducer.TwitterStreamApp.Main"),
+    assemblyJarName in assembly := "TwitterStream.jar"
+  )

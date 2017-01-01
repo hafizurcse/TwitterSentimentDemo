@@ -50,7 +50,9 @@ class TwitterStatusListener(streamHandler: ActorRef) extends StatusListener {
       "text" -> text,
       "clean_text" -> Jsoup.parse(text).text(),
       "created_at" -> status.getCreatedAt().toString,
-      "retweets" -> status.getRetweetCount().toString
+      "retweets" -> status.getRetweetCount().toString,
+      "geoLocation" -> status.getGeoLocation().toString,
+      "FavoriteCount" -> status.getFavoriteCount().toString
     )
 
   }

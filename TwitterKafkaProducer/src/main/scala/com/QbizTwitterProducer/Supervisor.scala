@@ -17,11 +17,12 @@ class Supervisor extends Actor {
 
   // In Actor Systems each actor is the supervisor of its children, and as such each actor defines
   // fault handling supervisor strategy.
-  override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries, withinTimeRange = 1 second)({
-    case ex: Exception =>
-      logger.error("Actor Instance is dead and Recreating ", ex)
-      Resume
-  })
+  override val supervisorStrategy =
+    OneForOneStrategy(maxNrOfRetries, withinTimeRange = 1 second)({
+      case ex: Exception =>
+        logger.error("Actor Instance is dead and Recreating ", ex)
+        Resume
+    })
 
   // Handling Data
   def receive: PartialFunction[Any, Unit] = {

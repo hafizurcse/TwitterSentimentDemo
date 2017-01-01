@@ -9,8 +9,10 @@ object Util {
 
   // Twitter Credentials
   private val CONSUMER_KEY = "qjjoV3u8wF0aRxhz8lcxwvXgQ"
-  private val CONSUMER_SECRET = "dRAhl7QLig13Jgk2qd9S3vwhafDyeiGEiK83NZ73JvYGZErxPK"
-  private val ACCESS_TOKEN = "15273997-kaf1qbnw3qSQnvC554qsk5PDTJqGUf3xDjhBd7p86"
+  private val CONSUMER_SECRET =
+    "dRAhl7QLig13Jgk2qd9S3vwhafDyeiGEiK83NZ73JvYGZErxPK"
+  private val ACCESS_TOKEN =
+    "15273997-kaf1qbnw3qSQnvC554qsk5PDTJqGUf3xDjhBd7p86"
   private val SECRET_TOKEN = "QXZXJiv9soEJmm1uWogY2L0hMFPj46OKTovy6Lb5PcuPg"
 
   // Kafka Topic to Pass Messages To

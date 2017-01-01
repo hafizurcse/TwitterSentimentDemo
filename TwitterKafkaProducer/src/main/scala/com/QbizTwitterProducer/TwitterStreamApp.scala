@@ -26,31 +26,48 @@ object TwitterStreamApp extends App {
   // Assuming the Kafka is setup locally
   val kafkaProducer = Producer("localhost:9092", dispatcher)
   val topic = Util.KafkaTopic
-  val kafkaProducerActor = (supervisor ? (KafkaProducerActor.props(kafkaProducer), "kafkaProducerActor")).mapTo[ActorRef]
+  val kafkaProducerActor = (supervisor ? (KafkaProducerActor.props(
+    kafkaProducer), "kafkaProducerActor")).mapTo[ActorRef]
 
   // Defining a Kafka Producer
-  kafkaProducerActor.flatMap { producerActor =>
+  kafkaProducerActor
+    .flatMap { producerActor =>
+      (supervisor ? (StreamHandler.props(producerActor, topic), "streamHandler"))
+        .mapTo[ActorRef]
 
-    (supervisor ? (StreamHandler.props(producerActor, topic), "streamHandler")).mapTo[ActorRef]
+    }
+    .onComplete {
 
-  }.onComplete {
+      case Success(streamHandler) =>
+        // Define the Twitter Stream Params:
+        val twitterStream: TwitterStream =
+          new TwitterStreamFactory(Util.config).getInstance
+        val listener: StatusListener = new TwitterStatusListener(streamHandler)
+        twitterStream.addListener(listener)
 
-    case Success(streamHandler) =>
+        // Twitter Filtering
+        twitterStream.sample("en")
+        twitterStream.filter(
+          "crossfit",
+          "functional fitness",
+          "rich froning",
+          "froning",
+          "crossfit games",
+          "regionals",
+          "dave castro",
+          "katrin",
+          "matt fraser",
+          "deep learning",
+          "machine learning",
+          "reinforcement learning",
+          "scala",
+          "premier league"
+        )
 
-      // Define the Twitter Stream Params:
-      val twitterStream: TwitterStream = new TwitterStreamFactory(Util.config).getInstance
-      val listener: StatusListener = new TwitterStatusListener(streamHandler)
-      twitterStream.addListener(listener)
+      // In event an Actor cannot start - log this!
+      case Failure(ex) =>
+        logger.error("Error in actor initialization ", ex)
+        System.exit(0)
 
-      // Twitter Filtering
-      twitterStream.sample("en")
-      twitterStream.filter("gala", "ladbrokes", "sports betting", "coral",
-      "ladbrookes coral", "gala coral")
-
-    // In event an Actor cannot start - log this!
-    case Failure(ex) =>
-      logger.error("Error in actor initialization ", ex)
-      System.exit(0)
-
-  }
+    }
 }

@@ -6,7 +6,6 @@ import org.jsoup.Jsoup
 import org.slf4j.{Logger, LoggerFactory}
 import twitter4j.{StallWarning, Status, StatusDeletionNotice, StatusListener}
 
-
 /**
   * Created by dan.dixey on 09/10/2016.
   */
@@ -43,19 +42,25 @@ class TwitterStatusListener(streamHandler: ActorRef) extends StatusListener {
 
   private def getAllField(status: Status): Map[String, String] = {
     val text = status.getText().replaceAll("\n", " ")
+    val geoLocation = status.getGeoLocation()
+
     Map(
       "id" -> status.getId().toString,
       "media_type" -> "twitter",
-      "author_username" -> Option(status.getUser).fold(EMPTY_STRING)(_.getScreenName),
+      "author_username" -> Option(status.getUser)
+        .fold(EMPTY_STRING)(_.getScreenName),
       "text" -> text,
       "clean_text" -> Jsoup.parse(text).text(),
       "created_at" -> status.getCreatedAt().toString,
       "retweets" -> status.getRetweetCount().toString,
-      "geoLocation" -> status.getGeoLocation().toString,
+      "Latitude" -> Option(status.getGeoLocation)
+        .map(_.getLatitude().toString)
+        .getOrElse(""),
+      "Longitude" -> Option(status.getGeoLocation)
+        .map(_.getLongitude().toString)
+        .getOrElse(""),
       "FavoriteCount" -> status.getFavoriteCount().toString
     )
 
   }
 }
-
-

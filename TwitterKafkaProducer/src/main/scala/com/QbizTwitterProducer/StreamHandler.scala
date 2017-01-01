@@ -29,7 +29,8 @@ class StreamHandler(kafkaProducer: ActorRef, topic: String) extends Actor {
 
 object StreamHandler {
 
-  def props(kafkaProducer: ActorRef, topic: String) = Props(classOf[StreamHandler], kafkaProducer, topic)
+  def props(kafkaProducer: ActorRef, topic: String) =
+    Props(classOf[StreamHandler], kafkaProducer, topic)
   case class Tweet(feed: Map[String, String])
 
 }

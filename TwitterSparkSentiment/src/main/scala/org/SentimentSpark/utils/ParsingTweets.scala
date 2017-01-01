@@ -105,7 +105,9 @@ object ParsingTweets {
       "author_username" -> tweetElements(1),
       "created_at" -> tweetElements(2),
       "coreNLPlabel" -> tweetElements(3),
-      "MLLIBlabel" -> tweetElements(4)
+      "MLLIBlabel" -> tweetElements(4),
+      "Latitude" -> tweetElements(5),
+      "Longitude" -> tweetElements(6)
     )
 
     val jsonOutput = Json(DefaultFormats).write(jSONDocument)
@@ -133,6 +135,16 @@ object ParsingTweets {
     // Get the Tweet Text
     val text: String = parseTweet match {
       case Some(m: Map[String, String]) => m("text")
+      case _ => "Failed"
+    }
+
+    // Get the Geo-Location
+    val Latitude: String = parseTweet match {
+      case Some(m: Map[String, String]) => m("Latitude")
+      case _ => "Failed"
+    }
+    val Longitude: String = parseTweet match {
+      case Some(m: Map[String, String]) => m("Longitude")
       case _ => "Failed"
     }
 
@@ -176,7 +188,13 @@ object ParsingTweets {
 
     // Convert JSON
     prepareJSON(
-      List(text, author_username, created_at, coreNLPlabel, MLLIBlabel))
+      List(text,
+           author_username,
+           created_at,
+           coreNLPlabel,
+           MLLIBlabel,
+           Latitude,
+           Longitude))
 
   }
 

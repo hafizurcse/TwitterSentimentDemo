@@ -2,6 +2,7 @@ package org.SentimentSpark
 
 import org.SentimentSpark.utils._
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.mllib.classification.NaiveBayesModel
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.streaming.kafka.KafkaUtils
@@ -15,7 +16,10 @@ object KafkaConsumerApp extends App {
 
   override def main(args: Array[String]): Unit = {
 
-    val logger = LogUtils.log
+    val logger = LogManager.getRootLogger
+    LogManager.getLogger("org.apache.spark").setLevel(Level.FATAL)
+    LogManager.getLogger("org.eclipse.jetty.server").setLevel(Level.FATAL)
+    LogManager.getLogger("org.apache.kafka").setLevel(Level.FATAL)
 
     // Setup the Spark Environment
     val conf = new SparkConf()
